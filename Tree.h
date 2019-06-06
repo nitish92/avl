@@ -20,8 +20,8 @@ int getBalance(Node *N);
 Node* insert(Node* node, int key, int *rotations, int *visits);
 void preOrder(Node *root);
 int lookup(Node* root, int find, int *visits);
-
-void printTree(Node* root, int *c);
+void delete_everything(Node* root);
+void print_the_tree(Node* root, int *count);
 
 
 #endif

@@ -1,7 +1,6 @@
 #include <fstream>
 #include <iostream>
 #include <string>
-#include <unistd.h>
 #include <bits/stdc++.h>
 #include "Tree.h"
 using namespace std;
@@ -96,7 +95,7 @@ int getBalance(Node *N)
 // Recursive function to insert a key 
 // in the subtree rooted with node and 
 // returns the new root of the subtree.  
-Node* insert(Node* node, int key, int *rotations, int *visits)  
+Node* insert(Node* node, int key, int *rotationsPointer, int *visits)  
 {  
     /* 1. Perform the normal BST insertion */
     if (node == NULL)  
@@ -105,12 +104,12 @@ Node* insert(Node* node, int key, int *rotations, int *visits)
     if (key < node->key)
     {
         *visits += 1;  
-        node->left = insert(node->left, key, rotations, visits);  
+        node->left = insert(node->left, key, rotationsPointer, visits);  
     }
     else if (key > node->key)
     {
         *visits += 1;  
-        node->right = insert(node->right, key, rotations, visits); 
+        node->right = insert(node->right, key, rotationsPointer, visits); 
     } 
     else // Equal keys are not allowed in BST  
     {
@@ -133,14 +132,14 @@ Node* insert(Node* node, int key, int *rotations, int *visits)
     // Left Left Case  
     if (balance > 1 && key < node->left->key)
     {
-        *rotations+=1;
+        *rotationsPointer+=1;
         return rightRotate(node);
     }  
           
     // Right Right Case  
     if (balance < -1 && key > node->right->key)
     {
-        *rotations+=1;
+        *rotationsPointer+=1;
         return leftRotate(node);
     }  
           
@@ -148,7 +147,7 @@ Node* insert(Node* node, int key, int *rotations, int *visits)
     // Left Right Case  
     if (balance > 1 && key > node->left->key)  
     {  
-        *rotations+=2;
+        *rotationsPointer+=2;
         node->left = leftRotate(node->left);  
         return rightRotate(node);  
     }  
@@ -156,7 +155,7 @@ Node* insert(Node* node, int key, int *rotations, int *visits)
     // Right Left Case  
     if (balance < -1 && key < node->right->key)  
     {  
-        *rotations+=2;
+        *rotationsPointer+=2;
         node->right = rightRotate(node->right);  
         return leftRotate(node);  
     }  
@@ -185,37 +184,45 @@ int lookup(Node* root, int find, int *visits)
             return lookup(root->right, find, visits);
         }
         else
-        {
             return -1;
-        }
     }
     else
         return -1;
 }
 
-void printTree(Node* root, int *c)
+void print_the_tree(Node* root, int *count)
 {
     if(root != NULL)
     {
         if (root->left != NULL || root->right != NULL)
         {
-            cout << string(*c*2, ' ' );
+            cout << string(*count, ' ' ) << string(*count, ' ' );
             cout << "Node(" << root->key << ", h=" << root->height -1 << "):" << endl;
-            int s= *c+1;
-            printTree(root->left, &s);
-            printTree(root->right, &s);
+            int s= *count+1;
+            print_the_tree(root->left, &s);
+            print_the_tree(root->right, &s);
         }
         if (root->left == NULL && root->right == NULL)
         {
-            cout << string(*c*2, ' ' );
+            cout << string(*count, ' ' ) << string(*count, ' ' );
             cout << "Leaf(" << root->key << ")" << endl;
         }
     }
     else
     {
-        cout << string(*c*2, ' ' );
+        cout << string(*count, ' ' ) << string(*count, ' ' );
         cout << "Null" << endl;
     }
+}
+
+void delete_everything(Node* root)
+{
+  if (root != NULL)
+  {
+    delete_everything(root->right);
+    delete_everything(root->left);
+    delete root;
+  }
 }
   
 // A utility function to print preorder  
